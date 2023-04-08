@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import Layout from './Layout'
 import Model from './Model'
@@ -11,7 +11,7 @@ import Model from './Model'
 class Immersal {
   localizeSuccessCount = 0
   localizeTryCount = 0
-  pointCloud = null
+  mapModel = null
 
   init() {
     this.bind()
@@ -26,7 +26,7 @@ class Immersal {
       error: this.localizeError,
     }
 
-    this.loadPLY();
+    this.loadGLB();
   }
 
   bind() {
@@ -38,32 +38,24 @@ class Immersal {
     Layout.setlocalizeStatus(status,this.localizeSuccessCount,this.localizeTryCount)
   }
 
-  loadPLY() {
-    console.log("loadPLY")
-    const loader = new PLYLoader()
-    const url = this.baseUrl + 'dense?token=' 
+  loadGLB() {
+    console.log("loadGLB")
+    const loader = new GLTFLoader()
+    const url = this.baseUrl + 'tex?token=' 
       + import.meta.env.VITE_IMMERSAL_TOKEN 
       + '&id=' + import.meta.env.VITE_MAP_ID
 
     
     console.log(url)
   
-    loader.load(url, (geometry) => {
+    loader.load(url, (glb) => {
       const {scene, camera, renderer} = XR8.Threejs.xrScene()
-  
-      geometry.computeVertexNormals()
-      //geometry.computeFaceNormals();
-  
-      const material = new THREE.PointsMaterial({ color: 0xFFFF00, vertexColors: THREE.VertexColors, size: 5, sizeAttenuation: false } )
-      this.pointCloud = new THREE.Points( geometry, material )
-  
-      const box = new THREE.Box3().setFromObject(this.pointCloud);
-  
-      this.pointCloud.scale.set(1, 1, 1)
 
-      this.pointCloud.visible = false;
+      //this.pointCloud.visible = false;
+      this.mapModel = glb.scene;
+      this.mapModel.rotation.set(0,Math.PI,0)
             
-      scene.add( this.pointCloud )
+      scene.add( this.mapModel )
     }, ( xhr ) => {
 
       console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
@@ -78,10 +70,10 @@ class Immersal {
   }
 
   updateModel(position, rotation, scale){
-    this.pointCloud.visible = true;
-    this.pointCloud.position.copy(position)
-    this.pointCloud.rotation.copy(rotation)
-    this.pointCloud.scale.copy(scale)
+    this.mapModel.visible = true;
+    this.mapModel.position.copy(position)
+    this.mapModel.rotation.copy(rotation)
+    this.mapModel.scale.copy(scale)
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
