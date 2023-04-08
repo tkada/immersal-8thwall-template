@@ -54,6 +54,10 @@ class Layout {
       <div class="spinner"></div>
     `
 
+    document.querySelector('.debugarea.container').innerHTML = `
+      <p>Localize Status</p><p>0/0</p>
+    `
+
     this.buttons = document.querySelector('.menu.buttons')
     this.loading = document.querySelector('.loading')
 
