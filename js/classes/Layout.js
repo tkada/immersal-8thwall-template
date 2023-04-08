@@ -42,6 +42,9 @@ class Layout {
     this.localize = this.localize.bind(this)
   }
 
+  localizeStatus;
+  localizeCountText;
+
   setLayout() {
     document.querySelector('.menu.container').innerHTML = `
       <button id="toggle-btn"></button>
@@ -55,7 +58,7 @@ class Layout {
     `
 
     document.querySelector('.debugarea.container').innerHTML = `
-      <p>Localize Status</p><p>0/0</p>
+      <p id="localize-status">Localize Status:None</p><p id="localize-count">0/0</p>
     `
 
     this.buttons = document.querySelector('.menu.buttons')
@@ -66,6 +69,14 @@ class Layout {
 
     this.localizeBtn = document.getElementById('localize-btn')
     this.localizeBtn.addEventListener('click', this.localize)
+
+    this.localizeStatus = document.getElementById('localize-status')
+    this.localizeCountText = document.getElementById('localize-count')
+  }
+
+  setlocalizeStatus(status,successCount,tryCount){
+    this.localizeStatus.innerText = `Localize Status:${status}`
+    this.localizeCountText.innerText = `${successCount}/${tryCount}`
   }
 
   init() {

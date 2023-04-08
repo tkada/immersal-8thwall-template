@@ -8,6 +8,9 @@ import Model from './Model'
  * https://immersal.gitbook.io/sdk/api-documentation/rest-api#localize-image
  */
 class Immersal {
+  localizeSuccessCount = 0;
+  localizeTryCount = 0
+
   init() {
     this.bind()
 
@@ -27,11 +30,18 @@ class Immersal {
     this.localizeSuccess = this.localizeSuccess.bind(this)
   }
 
+  updateStats(status){
+    Layout.setlocalizeStatus(status,this.localizeSuccessCount,this.localizeTryCount)
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////
 
   startLocalizing() {
     this.localizingState = true
     Layout.toggle()
+    
+    this.localizeTryCount++;
+    this.updateStats('Localizing')
   }
 
   endLocalizing() {
@@ -45,6 +55,7 @@ class Immersal {
     const json = await response.json()
     const error = json?.error || 'Something happened!'
     const message = `Status ${response.status}\n\nFailed to ${this.endpoint}: ${error}`
+    this.updateStats('Localize ERROR')
 
     alert(message)
   }
@@ -109,8 +120,13 @@ class Immersal {
       resultMatrix.decompose(position, rotation, scale)
 
       Model.reveal(position, rotation, scale)
+
+      this.localizeSuccessCount++;
+      this.updateStats('Localized')
     } else {
       alert('Localization failed.\nPlease try again')
+
+      this.updateStats('Localization failed')
     }
   }
 
@@ -151,6 +167,8 @@ class Immersal {
       this.responseCallback[responseState](response)
     } catch (error) {
       console.error('localize-error', error)
+
+      this.updateStats('localize-error')
     }
 
     this.endLocalizing()
