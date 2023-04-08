@@ -9,8 +9,9 @@ import Model from './Model'
  * https://immersal.gitbook.io/sdk/api-documentation/rest-api#localize-image
  */
 class Immersal {
-  localizeSuccessCount = 0;
+  localizeSuccessCount = 0
   localizeTryCount = 0
+  pointCloud = null
 
   init() {
     this.bind()
@@ -54,21 +55,15 @@ class Immersal {
       //geometry.computeFaceNormals();
   
       const material = new THREE.PointsMaterial({ color: 0xFFFF00, vertexColors: THREE.VertexColors, size: 5, sizeAttenuation: false } )
-      const pointCloud = new THREE.Points( geometry, material )
+      this.pointCloud = new THREE.Points( geometry, material )
   
-      const box = new THREE.Box3().setFromObject(pointCloud);
-      const size = box.getSize(new THREE.Vector3()).length();
-      const center = box.getCenter(new THREE.Vector3());
+      const box = new THREE.Box3().setFromObject(this.pointCloud);
   
-      pointCloud.scale.set(1, 1, 1)
+      this.pointCloud.scale.set(1, 1, 1)
+
+      this.pointCloud.visible = false;
             
-      scene.add( pointCloud )
-  
-      const axesHelper = new THREE.AxesHelper( 2 );
-      axesHelper.position.x -= center.x;
-      axesHelper.position.y -= center.y;
-      axesHelper.position.z -= center.z;
-      scene.add( axesHelper );
+      scene.add( this.pointCloud )
     }, ( xhr ) => {
 
       console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
@@ -80,6 +75,13 @@ class Immersal {
       console.log( 'An error happened=>'+error );
   
     })
+  }
+
+  updateModel(position, rotation, scale){
+    this.pointCloud.visible = true;
+    this.pointCloud.position.copy(position)
+    this.pointCloud.rotation.copy(rotation)
+    this.pointCloud.scale.copy(scale)
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +169,8 @@ class Immersal {
 
       resultMatrix.decompose(position, rotation, scale)
 
-      Model.reveal(position, rotation, scale)
+      //Model.reveal(position, rotation, scale)
+      this.updateModel(position,rotation,scale)
 
       this.localizeSuccessCount++;
       this.updateStats('Localized')
