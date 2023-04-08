@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader'
 
 import Layout from './Layout'
 import Model from './Model'
@@ -23,6 +24,8 @@ class Immersal {
       success: this.localizeSuccess,
       error: this.localizeError,
     }
+
+    this.loadPLY();
   }
 
   bind() {
@@ -32,6 +35,51 @@ class Immersal {
 
   updateStats(status){
     Layout.setlocalizeStatus(status,this.localizeSuccessCount,this.localizeTryCount)
+  }
+
+  loadPLY() {
+    console.log("loadPLY")
+    const loader = new PLYLoader()
+    const url = this.baseUrl + 'dense?token=' 
+      + import.meta.env.VITE_IMMERSAL_TOKEN 
+      + '&id=' + import.meta.env.VITE_MAP_ID
+
+    
+    console.log(url)
+  
+    loader.load(url, (geometry) => {
+      const {scene, camera, renderer} = XR8.Threejs.xrScene()
+  
+      geometry.computeVertexNormals()
+      //geometry.computeFaceNormals();
+  
+      const material = new THREE.PointsMaterial({ color: 0xFFFF00, vertexColors: THREE.VertexColors, size: 5, sizeAttenuation: false } )
+      const pointCloud = new THREE.Points( geometry, material )
+  
+      const box = new THREE.Box3().setFromObject(pointCloud);
+      const size = box.getSize(new THREE.Vector3()).length();
+      const center = box.getCenter(new THREE.Vector3());
+  
+      pointCloud.scale.set(1, 1, 1)
+            
+      scene.add( pointCloud )
+  
+      const axesHelper = new THREE.AxesHelper( 2 );
+      axesHelper.position.x -= center.x;
+      axesHelper.position.y -= center.y;
+      axesHelper.position.z -= center.z;
+      scene.add( axesHelper );
+    }, ( xhr ) => {
+
+      console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+  
+    },
+    // called when loading has errors
+    ( error ) => {
+  
+      console.log( 'An error happened=>'+error );
+  
+    })
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +221,11 @@ class Immersal {
 
     this.endLocalizing()
   }
+
+  
 }
+
+
 
 const instance = new Immersal()
 export default instance
