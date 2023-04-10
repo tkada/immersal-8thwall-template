@@ -53,7 +53,7 @@ class Immersal {
 
       //this.pointCloud.visible = false;
       this.mapModel = glb.scene;
-      this.mapModel.rotation.set(0,Math.PI,0)
+      //this.mapModel.rotation.set(0,Math.PI,0)
             
       scene.add( this.mapModel )
     }, ( xhr ) => {
@@ -72,7 +72,7 @@ class Immersal {
   updateModel(position, rotation, scale){
     this.mapModel.visible = true;
     this.mapModel.position.copy(position)
-    this.mapModel.rotation.copy(rotation)
+    this.mapModel.quaternion.copy(rotation)
     this.mapModel.scale.copy(scale)
   }
 
