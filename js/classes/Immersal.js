@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader'
 
 import Layout from './Layout'
 import Model from './Model'
@@ -40,20 +40,24 @@ class Immersal {
 
   loadGLB() {
     console.log("loadGLB")
-    const loader = new GLTFLoader()
-    const url = this.baseUrl + 'tex?token=' 
+    const loader = new PLYLoader()
+    const url = this.baseUrl + 'dense?token=' 
       + import.meta.env.VITE_IMMERSAL_TOKEN 
       + '&id=' + import.meta.env.VITE_MAP_ID
 
     
     console.log(url)
   
-    loader.load(url, (glb) => {
+    loader.load(url, (geometory) => {
       const {scene, camera, renderer} = XR8.Threejs.xrScene()
 
       //this.pointCloud.visible = false;
-      this.mapModel = glb.scene;
-      //this.mapModel.rotation.set(0,Math.PI,0)
+      const mat = new THREE.PointsMaterial({
+        vertexColors:true,
+        size:0.005
+      })
+      const points = new THREE.Points(geometory,mat)
+      this.mapModel = points;
             
       scene.add( this.mapModel )
     }, ( xhr ) => {
