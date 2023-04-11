@@ -1,9 +1,14 @@
 # Prototype: Immersal AR + 8thWall Template
 
+![](immersal.gif)
+
+[English README](readme.md)
+
+
 ## 概要
 - Immersal ARと8th Wallを使った最小限の位置合わせサンプルです
 - WebARにはThree.jsを使用しています
-- 点群(PLY)またはGLBファイルをダウンロードして表示することができます
+- 点群(PLY)またはGLBファイルをダウンロードして表示することができます<br>
 https://github.com/tkada/immersal-8thwall-template/blob/main/js/classes/Immersal.js
 
 
