@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import Layout from './Layout'
 import Model from './Model'
@@ -26,7 +27,11 @@ class Immersal {
       error: this.localizeError,
     }
 
-    this.loadGLB();
+    //Load PLY File.
+    this.loadPLY();
+
+    //Load GLB File.
+    //this.loadGLB();
   }
 
   bind() {
@@ -38,36 +43,60 @@ class Immersal {
     Layout.setlocalizeStatus(status,this.localizeSuccessCount,this.localizeTryCount)
   }
 
-  loadGLB() {
-    console.log("loadGLB")
+  /**
+   * Load PLY
+   */
+  loadPLY() {
+    console.log("loadPLY")
     const loader = new PLYLoader()
     const url = this.baseUrl + 'dense?token=' 
       + import.meta.env.VITE_IMMERSAL_TOKEN 
       + '&id=' + import.meta.env.VITE_MAP_ID
-
-    
-    console.log(url)
   
     loader.load(url, (geometory) => {
       const {scene, camera, renderer} = XR8.Threejs.xrScene()
 
-      //this.pointCloud.visible = false;
       const mat = new THREE.PointsMaterial({
         vertexColors:true,
         size:0.005
       })
       const points = new THREE.Points(geometory,mat)
       this.mapModel = points;
+      this.mapModel.visible = false;
             
       scene.add( this.mapModel )
     }, ( xhr ) => {
-
-      console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-  
+      console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );  
     },
     // called when loading has errors
-    ( error ) => {
+    ( error ) => { 
+      console.log( 'An error happened=>'+error );
   
+    })
+  }
+
+  /**
+   * Load GLB
+   */
+  loadGLB() {
+    console.log("loadGLB")
+    const loader = new GLTFLoader()
+    const url = this.baseUrl + 'tex?token=' 
+      + import.meta.env.VITE_IMMERSAL_TOKEN 
+      + '&id=' + import.meta.env.VITE_MAP_ID
+  
+    loader.load(url, (geometory) => {
+      const {scene, camera, renderer} = XR8.Threejs.xrScene()
+
+      this.mapModel = geometory.scene;
+      this.mapModel.visible = false;
+            
+      scene.add( this.mapModel )
+    }, ( xhr ) => {
+      console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );  
+    },
+    // called when loading has errors
+    ( error ) => { 
       console.log( 'An error happened=>'+error );
   
     })
