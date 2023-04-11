@@ -1,4 +1,7 @@
 # Prototype: Immersal AR + 8thWall Template
+![](immersal.gif)
+
+[日本語README](readme_jp.md)
 
 ## Description
 
